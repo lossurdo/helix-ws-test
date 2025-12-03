@@ -16,7 +16,7 @@ def info():
     }
 
 
-@app.post("/convert-properties-to-json")
+@app.post("/rest/convert-properties-to-json")
 async def convert_properties_to_json(request: Request):
     arr = await request.json()
     obj = arr[0]
@@ -52,9 +52,9 @@ async def convert_properties_to_json(request: Request):
         "submitter_job_title": objSubmitter.get("jobTitle"),
     }
 
-    questions_and_answers = {}
+    questions_and_answers = ""
     for qna in arrQnA:
-        questions_and_answers[qna.get("label")] = qna.get("value")
-    map["questions_and_answers"] = questions_and_answers
+        questions_and_answers += f"{qna.get('label')}@,@{qna.get('value')}@;@"
+    map["questions_and_answers"] = questions_and_answers.rstrip("@;@")
 
     return JSONResponse(content=map)
