@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 from fastapi.responses import JSONResponse
+from typing import Optional
 
 import logging
 
@@ -71,3 +72,32 @@ async def convert_properties_to_json(request: Request):
     map["questions_and_answers"] = questions_and_answers
 
     return JSONResponse(content=map)
+
+
+@app.post("/rest/get-value-from-json")
+async def get_value_from_json(
+    request: Request,
+    key: str = Query(..., description="Key to search for"),
+    qna: bool = Query(False, description="Search in questions_and_answers")
+):
+    obj = await request.json()
+    logger.info(f"Received JSON: {obj}")
+
+    if qna:
+        qna_obj = obj.get("questions_and_answers")
+        if not qna_obj or key not in qna_obj:
+            return JSONResponse(
+                status_code=404,
+                content={"error": f"Key not found in questions_and_answers: {key}"}
+            )
+        value = qna_obj.get(key)
+        return JSONResponse(content={"value": value})
+
+    if key not in obj:
+        return JSONResponse(
+            status_code=404,
+            content={"error": f"Key not found: {key}"}
+        )
+    value = obj.get(key)
+    return JSONResponse(content={"value": value})
+
