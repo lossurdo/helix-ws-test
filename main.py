@@ -17,7 +17,7 @@ def info():
     }
 
 
-@app.post("/rest/convert-properties-to-json")
+@app.get("/rest/convert-properties-to-json")
 async def convert_properties_to_json(json_param: str = Query(..., alias="json")):
     arr = json.loads(json_param)
     obj = arr[0]
