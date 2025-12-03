@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request, Query
 from fastapi.responses import JSONResponse
-from typing import Optional
+from fastapi.responses import PlainTextResponse
+
+from util import *
 
 import logging
 
@@ -80,22 +82,17 @@ async def get_value_from_json(
     key: str = Query(..., description="Key to search for"),
     qna: bool = Query(False, description="Search in questions_and_answers")
 ):
+
     obj = await request.json()
     logger.info(f"Received JSON: {obj}")
 
     if qna:
         qna_obj = obj.get("questions_and_answers")
         if not qna_obj or key not in qna_obj:
-            return JSONResponse(
-                status_code=404,
-                content={"error": f"Key not found in questions_and_answers: {key}"}
-            )
-        return qna_obj.get(key)
+            return PlainTextResponse(status_code=404)
+        return PlainTextResponse(content=qna_obj.get(key))
 
     if key not in obj:
-        return JSONResponse(
-            status_code=404,
-            content={"error": f"Key not found: {key}"}
-        )
+        return PlainTextResponse(status_code=404)
 
-    return obj.get(key)
+    return PlainTextResponse(content=obj.get(key))
