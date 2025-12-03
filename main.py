@@ -3,6 +3,9 @@ from fastapi.responses import JSONResponse
 
 import logging
 
+logger = logging.getLogger("uvicorn")
+logging.basicConfig(level=logging.INFO)
+
 app = FastAPI()
 
 
@@ -20,8 +23,15 @@ def info():
 
 @app.post("/rest/convert-properties-to-json")
 async def convert_properties_to_json(request: Request):
+    logger.info(f"Received REQUEST: {request}")
+
     arr = await request.json()
-    logging.info(f"Received JSON: {arr}")
+    logger.info(f"Received JSON: {arr}")
+
+    if not arr or len(arr) == 0:
+        return JSONResponse(content={
+            "error": "No data provided"
+        })
 
     obj = arr[0]
 
