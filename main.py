@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 from fastapi.responses import JSONResponse
+import json
 
 app = FastAPI()
 
@@ -17,8 +18,8 @@ def info():
 
 
 @app.post("/rest/convert-properties-to-json")
-async def convert_properties_to_json(request: Request):
-    arr = await request.json()
+async def convert_properties_to_json(json_param: str = Query(..., alias="json")):
+    arr = json.loads(json_param)
     obj = arr[0]
 
     objServiceRequest = obj.get("serviceRequest", {})
@@ -52,9 +53,12 @@ async def convert_properties_to_json(request: Request):
         "submitter_job_title": objSubmitter.get("jobTitle"),
     }
 
-    questions_and_answers = ""
+    questions_and_answers_string = ""
+    questions_and_answers = {}
     for qna in arrQnA:
-        questions_and_answers += f"{qna.get('label')}@,@{qna.get('value')}@;@"
-    map["questions_and_answers"] = questions_and_answers.rstrip("@;@")
+        questions_and_answers_string += f"{qna.get('label')}@,@{qna.get('value')}@;@"
+        questions_and_answers[qna.get("label")] = qna.get("value")
+    map["questions_and_answers_string"] = questions_and_answers_string.rstrip("@;@")
+    map["questions_and_answers"] = questions_and_answers
 
     return JSONResponse(content=map)
