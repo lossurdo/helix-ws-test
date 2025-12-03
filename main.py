@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+import logging
+
 app = FastAPI()
 
 
@@ -19,6 +21,8 @@ def info():
 @app.post("/rest/convert-properties-to-json")
 async def convert_properties_to_json(request: Request):
     arr = await request.json()
+    logging.info(f"Received JSON: {arr}")
+
     obj = arr[0]
 
     objServiceRequest = obj.get("serviceRequest", {})
