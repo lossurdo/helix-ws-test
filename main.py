@@ -23,17 +23,13 @@ def info():
 
 @app.post("/rest/convert-properties-to-json")
 async def convert_properties_to_json(request: Request):
-    logger.info(f"Received REQUEST: {request}")
+    obj = await request.json()
+    logger.info(f"Received JSON: {obj}")
 
-    arr = await request.json()
-    logger.info(f"Received JSON: {arr}")
-
-    if not arr or len(arr) == 0:
+    if not obj:
         return JSONResponse(content={
             "error": "No data provided"
         })
-
-    obj = arr[0]
 
     objServiceRequest = obj.get("serviceRequest", {})
     objService = obj.get("service", {})
