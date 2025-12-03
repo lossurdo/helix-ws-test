@@ -90,14 +90,12 @@ async def get_value_from_json(
                 status_code=404,
                 content={"error": f"Key not found in questions_and_answers: {key}"}
             )
-        value = qna_obj.get(key)
-        return JSONResponse(content={"value": value})
+        return qna_obj.get(key)
 
     if key not in obj:
         return JSONResponse(
             status_code=404,
             content={"error": f"Key not found: {key}"}
         )
-    value = obj.get(key)
-    return JSONResponse(content={"value": value})
 
+    return obj.get(key)
