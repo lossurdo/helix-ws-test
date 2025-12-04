@@ -203,4 +203,7 @@ async def prepare_for_auto(
         "value": obj.get("submitter_job_title")
     })
 
+    for param in payload["params"]:
+        param["key"] = format_key_for_auto(param["key"])
+
     return JSONResponse(content=payload)
