@@ -90,12 +90,32 @@ async def get_value_from_json(
         qna_obj = obj.get("questions_and_answers")
         if not qna_obj or key not in qna_obj:
             return PlainTextResponse(status_code=404)
-        return PlainTextResponse(content=qna_obj.get(key))
+        return PlainTextResponse(content=str(qna_obj.get(key)))
 
     if key not in obj:
         return PlainTextResponse(status_code=404)
 
-    return PlainTextResponse(content=obj.get(key))
+    return PlainTextResponse(content=str(obj.get(key)))
+
+
+@app.post("/rest/get-return-properties")
+async def get_return_properties(
+    request: Request
+):
+
+    obj = await request.json()
+    logger.info(f"Received JSON: {obj}")
+
+    if "retorno_processamento_json" in obj and obj["retorno_processamento_json"]:
+        return JSONResponse(content={
+            "json": True,
+            "retorno": obj.get("retorno_processamento_json")
+        })
+    else:
+        return JSONResponse(content={
+            "json": False,
+            "retorno": obj.get("txt_retorno_processamento")
+            })
 
 
 @app.post("/rest/prepare-for-auto")
