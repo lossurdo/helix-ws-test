@@ -96,3 +96,111 @@ async def get_value_from_json(
         return PlainTextResponse(status_code=404)
 
     return PlainTextResponse(content=obj.get(key))
+
+
+@app.post("/rest/prepare-for-auto")
+async def prepare_for_auto(
+    request: Request,
+    auto_ident: str = Query(..., description="Identifier for the automation"),
+    auto_action: str = Query(..., description="Action to perform")
+):
+
+    obj = await request.json()
+    logger.info(f"Received JSON: {obj}")
+
+    payload = {
+        "helixTaskId": obj.get("id"),
+        "autoIdent": auto_ident,
+        "autoAction": auto_action,
+        "fallbackHelixGroup": "DES-AUTO",
+        "params": []
+    }
+
+    for key, value in obj.get("questions_and_answers", {}).items():
+        payload["params"].append({
+            "key": key,
+            "value": value
+        })
+
+    payload["params"].append({
+        "key": "submitted_date",
+        "value": obj.get("submitted_date")
+    })
+    payload["params"].append({
+        "key": "service_name",
+        "value": obj.get("service_name")
+    })
+    payload["params"].append({
+        "key": "requestedby_full_name",
+        "value": obj.get("requestedby_full_name")
+    })
+    payload["params"].append({
+        "key": "requestedby_login_name",
+        "value": obj.get("requestedby_login_name")
+    })
+    payload["params"].append({
+        "key": "requestedby_company",
+        "value": obj.get("requestedby_company")
+    })
+    payload["params"].append({
+        "key": "requestedby_organization",
+        "value": obj.get("requestedby_organization")
+    })
+    payload["params"].append({
+        "key": "requestedby_department",
+        "value": obj.get("requestedby_department")
+    })
+    payload["params"].append({
+        "key": "requestedby_job_title",
+        "value": obj.get("requestedby_job_title")
+    })
+    payload["params"].append({
+        "key": "requestedfor_full_name",
+        "value": obj.get("requestedfor_full_name")
+    })
+    payload["params"].append({
+        "key": "requestedfor_login_name",
+        "value": obj.get("requestedfor_login_name")
+    })
+    payload["params"].append({
+        "key": "requestedfor_company",
+        "value": obj.get("requestedfor_company")
+    })
+    payload["params"].append({
+        "key": "requestedfor_organization",
+        "value": obj.get("requestedfor_organization")
+    })
+    payload["params"].append({
+        "key": "requestedfor_department",
+        "value": obj.get("requestedfor_department")
+    })
+    payload["params"].append({
+        "key": "requestedfor_job_title",
+        "value": obj.get("requestedfor_job_title")
+    })
+    payload["params"].append({
+        "key": "submitter_full_name",
+        "value": obj.get("submitter_full_name")
+    })
+    payload["params"].append({
+        "key": "submitter_login_name",
+        "value": obj.get("submitter_login_name")
+    })
+    payload["params"].append({
+        "key": "submitter_company",
+        "value": obj.get("submitter_company")
+    })
+    payload["params"].append({
+        "key": "submitter_organization",
+        "value": obj.get("submitter_organization")
+    })
+    payload["params"].append({
+        "key": "submitter_department",
+        "value": obj.get("submitter_department")
+    })
+    payload["params"].append({
+        "key": "submitter_job_title",
+        "value": obj.get("submitter_job_title")
+    })
+
+    return JSONResponse(content=payload)
